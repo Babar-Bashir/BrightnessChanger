@@ -14,11 +14,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MenuInflater;
 
+import java.io.FileNotFoundException;
 import java.lang.Process;
 import java.lang.Runtime;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.Integer;
+import java.io.FileReader;
 
 import brightnesschanger.kuriata.damian.brightnesschanger.ScreenStateReceiver;
 
@@ -54,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
         switch(item.getItemId()) {
             case R.id.about:
                 createAndShowAboutDialog();
+            break;
+            case R.id.settings:
+                Intent intent = new Intent(this, SettingsActivity.class);
+                startActivity(intent);
             break;
         }
         return true;
@@ -91,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //not programmed yet
         Button setToDefaultButton = (Button) findViewById(R.id.default_btn);
         setToDefaultButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
     private void setBrightnessValue(final boolean setToDefault) {
         if(setToDefault) {
            // brightnessValue = getDefaultBrightnessValue();
-            brightnessValue = 1;
+            brightnessValue = getDefaultBrightnessValue();
         }
         else {
             brightnessValue = getBrightnessValueFromEditText();
@@ -115,6 +120,25 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         writeBrightnessValueToFile(brightnessValue);
+    }
+    private int getDefaultBrightnessValue() {
+        String filename = "/sys/class/leds/wled/max_brightness";
+        try {
+            FileReader reader = new FileReader(filename);
+            char [] valueChars = new char [5];
+            try {
+                int tmp = reader.read(valueChars);
+                String valueString = new String(valueChars).trim();
+                brightnessValue = Integer.parseInt(valueString) / 2;
+                reader.close();
+            }catch(IOException f) {
+                brightnessValue = -1;
+            }
+
+        }catch(FileNotFoundException e) {
+            brightnessValue = -1;
+        }
+        return brightnessValue;
     }
     private int getBrightnessValueFromEditText() {
         EditText brightnessInput = (EditText) findViewById(R.id.brightness_input_edtext);
