@@ -1,5 +1,1 @@
-package brightnesschanger.kuriata.damian.brightnesschanger;
-
-public class Actions {
-    public static final String ACTION_CLOSE_APPLICATION = "CLOSE APP";
-}
+/home/damian/AndroidStudioProjects/BrightnessChanger/app/src/main/java/brightnesschanger/kuriata/damian/brightnesschanger/Actions.java

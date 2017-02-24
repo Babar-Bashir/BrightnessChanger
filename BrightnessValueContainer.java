@@ -1,5 +1,1 @@
-package brightnesschanger.kuriata.damian.brightnesschanger;
-
-public class BrightnessValueContainer {
-	public static int brightnessValue;
-}
+/home/damian/AndroidStudioProjects/BrightnessChanger/app/src/main/java/brightnesschanger/kuriata/damian/brightnesschanger/BrightnessValueContainer.java

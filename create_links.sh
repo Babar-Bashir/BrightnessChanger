@@ -1,0 +1,1 @@
+/home/damian/AndroidStudioProjects/BrightnessChanger/app/src/main/java/brightnesschanger/kuriata/damian/brightnesschanger/create_links.sh
