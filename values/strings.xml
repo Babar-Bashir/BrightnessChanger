@@ -2,7 +2,6 @@
     <string name="app_name">Brightness changer</string>
     <string name="change">Change</string>
     <string name="default_val">Default</string>
-    <string name="cannot_get_root_access">Cannot get root access!</string>
     <string name="you_entered_a_wrong_value">You entered a wrong value!</string>
     <string name="could_not_change_the_brightness">Could not change the brightness!</string>
 
@@ -10,15 +9,106 @@
     <string name="menu_settings">Settings</string>
 
     <string name="about_dialog_title">About application</string>
-    <string name="app_version">alpha 0.1</string>
+    <string name="app_version">0.5</string>
     <string name="about_dialog_content">This application was developed by
-        Damian Kuriata on Linux platform using Android Studio 2.2.2\nApp version: @string/app_version</string>
-    <string name="service_description">This service performs setting up
+        Damian Kuriata on Linux platform using Android Studio 2.2.2\nApp version: <!--here app version will be placed programmically --></string>
+    <string name="screen_brightness_service_description">This service performs setting up
         screen brightness to value that was set by user after screen was turned off</string>
+    <string name="timer_service_description">This service is responsible for taking care of timer</string>
     <string name="notification_content_title">App running</string>
-    <string name="notification_content_text">Click to close application</string>
+    <string name="notification_content_text">Options</string>
     <string name="close_action_name">Close</string>
+    <string name="return_to_app">Return to application</string>
     <string name="exit_from_application">Exit from application</string>
     <string name="thanks">Thank you for using my application!</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- PREFERENCE RELATED STRINGS -->
+    <string name="settings_key">settings</string>
+
+    <string name="automatically_close_app_preference_key">keep_app_running</string>
+    <string name="automatically_close_app_preference_summary">Automatically close application when screen turns off</string>
+    <string name="automatically_close_app_preference_title">Automatically close application</string>
+
+    <string name="timer_preference_key">timer</string>
+    <string name="timer_preference_summary">Set the timer value how much time application should be running after screen turns off.
+        Unavailable when above checkbox is unchecked</string>
+    <string name="timer_preference_title">Set the timer value</string>
+
+    <string name="power_save_mode_preference_key">power_save_mode_preference_key</string>
+    <string name="power_save_mode_preference_summary">Application uses less resources, when screen is again turned on, an application may require root
+        permission again</string>
+    <string name="power_save_mode_preference_title">Power save mode</string>
+
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_social_recommendations">Enable social recommendations</string>
+    <string name="pref_description_social_recommendations">Recommendations for people to contact
+        based on your message history
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
+    <string-array name="pref_example_list_titles">
+        <item>Always</item>
+        <item>When possible</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_example_list_values">
+        <item>1</item>
+        <item>0</item>
+        <item>-1</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+
+    <string-array name="list_preference_entries">
+        <item>Entry 1</item>
+        <item>Entry 2</item>
+        <item>Entry 3</item>
+    </string-array>
+
+    <string-array name="list_preference_entry_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <string-array name="multi_select_list_preference_default_value" />
+
+    <string name="pref_title_system_sync_settings">System sync settings</string>
+
+    <!-- Example settings for Notifications -->
+    <string name="pref_header_notifications">Notifications</string>
+
+    <string name="pref_title_new_message_notifications">New message notifications</string>
+
+    <string name="pref_title_ringtone">Ringtone</string>
+    <string name="pref_ringtone_silent">Silent</string>
+
+    <string name="pref_title_vibrate">Vibrate</string>
 
 </resources>
