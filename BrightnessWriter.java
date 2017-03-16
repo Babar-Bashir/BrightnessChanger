@@ -11,6 +11,7 @@ import java.io.OutputStream;
 public class BrightnessWriter {
     private static Process rootProcess;
     private static OutputStream outputToFile;
+    private static byte toastShowsCounter = 0;
 
     public static void getRootAccess() {
             try {
@@ -28,7 +29,10 @@ public class BrightnessWriter {
             outputToFile.write((commandToExecute + "\n").getBytes());
             outputToFile.flush();
         }catch(IOException e) {
-            Toast.makeText(context, R.string.could_not_change_the_brightness, Toast.LENGTH_SHORT).show();
+            if(toastShowsCounter < 5) {
+                Toast.makeText(context, R.string.could_not_change_the_brightness, Toast.LENGTH_SHORT).show();
+                toastShowsCounter++;
+            }
         }
     }
 
@@ -36,7 +40,7 @@ public class BrightnessWriter {
             try {
                 outputToFile.close();
             } catch (IOException e) {
-                System.exit(0);
+                // assume this exception never will be thrown
             }
             rootProcess.destroy();
     }

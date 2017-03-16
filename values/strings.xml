@@ -40,6 +40,27 @@
         permission again</string>
     <string name="power_save_mode_preference_title">Power save mode</string>
 
+    <string name="default_brightness_value_preference_key">default_brightness_value_preference_key</string>
+    <string name="default_brightness_value_edit_text_preference_key">edit_text_preference_key</string>
+    <string name="default_brightness_value_preference_title">Default brightness value</string>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>

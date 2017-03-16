@@ -14,8 +14,8 @@ public class ScreenBrightnessService extends IntentService {
     /** This class extends IntentService class and it's responsible for handling screen brightness
      * This service starts when application starts and stops when application menu is opened up
      */
-    private ApplicationBroadcastReceiver screenStateReceiver;
-    private static final int NOTIFICATION_ID = 1;
+    private ApplicationBroadcastReceiver applicationBroadcastReceiver;
+    private static final byte NOTIFICATION_ID = 1;
 
     public ScreenBrightnessService() {
         super("ScreenBrightnessChanger");
@@ -24,11 +24,10 @@ public class ScreenBrightnessService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        screenStateReceiver = new ApplicationBroadcastReceiver();
+        applicationBroadcastReceiver = new ApplicationBroadcastReceiver();
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_ON);
-        //filter.addAction(Intent.ACTION_SCREEN_OFF);
-        registerReceiver(screenStateReceiver, filter);
-        System.out.println("On create");
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        registerReceiver(applicationBroadcastReceiver, filter);
         createAndStartForegroundService();
     }
 
@@ -71,9 +70,8 @@ public class ScreenBrightnessService extends IntentService {
 
     @Override
     public void onDestroy() {
-        System.out.println("On destroy");
         stopForeground(true);
-        unregisterReceiver(screenStateReceiver);
+        unregisterReceiver(applicationBroadcastReceiver);
     }
 
 }

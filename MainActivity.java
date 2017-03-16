@@ -18,8 +18,9 @@ import android.view.MenuInflater;
 import android.widget.SeekBar;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.lang.Integer;
 import java.io.FileReader;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import brightnesschanger.kuriata.damian.brightnesschanger.ScreenStateReceiver;
 import brightnesschanger.kuriata.damian.brightnesschanger.BrightnessWriter;
@@ -31,10 +32,12 @@ public class MainActivity extends AppCompatActivity {
     private ScreenBrightnessService screenBrightnessService;
     private SeekBar brightnessSeekBar;
     private EditText brightnessEditText;
-    private Context applicationContext;
-    private int maxBrightnessValue;
+    //private Context applicationContext;
+    private short maxBrightnessValue;
     private static boolean settingsMenuClickedPreviously;
     private SettingsFragment settingsFragment;
+    private short timerTimeLimit;
+    private boolean timerShouldBeStopped = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         BrightnessWriter.getRootAccess();
+        System.out.println("STARTING APPLICATION");
 
         maxBrightnessValue = getMaxBrightnessValue();
 
@@ -49,17 +53,15 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             BrightnessValueContainer.brightnessValue =
-                    Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+                    (short) Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
         }catch(Settings.SettingNotFoundException e) {
             BrightnessValueContainer.brightnessValue = 30;
         }
 
-        brightnessEditText.setText(Integer.toString(BrightnessValueContainer.brightnessValue));
+        brightnessEditText.setText(Short.toString(BrightnessValueContainer.brightnessValue));
         createAndSetupScreenBrightnessService();
         setUpBrightnessSeekBar();
         setButtonsOnClickAction();
-
-        applicationContext = getApplicationContext();
 
         settingsFragment = new SettingsFragment();
         settingsMenuClickedPreviously = false;
@@ -75,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
         brightnessSeekBar = (SeekBar) findViewById(R.id.brightness_seek_bar);
         brightnessSeekBar.setMax(maxBrightnessValue);
         brightnessSeekBar.setProgress(BrightnessValueContainer.brightnessValue);
+        final Context applicationContext = getApplicationContext();
+
         brightnessSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
@@ -82,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     if (i == 0) {
                         BrightnessValueContainer.brightnessValue = 1;
                     } else {
-                        BrightnessValueContainer.brightnessValue = i;
+                        BrightnessValueContainer.brightnessValue = (short) i;
                     }
                 }
             }
@@ -94,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                BrightnessValueContainer.brightnessValue = brightnessSeekBar.getProgress();
+                BrightnessValueContainer.brightnessValue = (short) brightnessSeekBar.getProgress();
                 if (BrightnessValueContainer.brightnessValue == 0) {
                     BrightnessValueContainer.brightnessValue = 1;
                 }
@@ -109,13 +113,40 @@ public class MainActivity extends AppCompatActivity {
         if(intent.getAction().equals(Actions.ACTION_CLOSE_APPLICATION)) {
             closeApplication();
         }
-        else if(intent.getAction().equals(Actions.ACTION_REOPEN_MAIN_ACTIVITY)) {
-            System.out.println("REOPENED");
+        else if(intent.getAction().equals(Actions.ACTION_CLOSE_APPLICATION_WITH_CHECKING_SETTINGS)) {
+            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+            if(preferences.getBoolean(getString(R.string.automatically_close_app_preference_key), false)) {
+                System.out.println("CLOSINT APP");
+                closeApplication();
+            }
+            else {
+                timerTimeLimit = getTimeToTerminateApplication();
+                Timer timer = new Timer();
+                TimerTask task = new TimerTask() {
+                    @Override
+                    public void run() {
+                        if(timerTimeLimit != 0) {
+                            timerTimeLimit--;
+                        }
+                        else {
+                            cancel();
+                            closeApplication();
+                        }
+                    }
+                };
+                timer.schedule(task, 0, 1000 * 60/*express time in one second*/);
+            }
         }
+
+    }
+
+    private short getTimeToTerminateApplication() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        return Short.parseShort(prefs.getString(getString(R.string.timer_preference_key), "2"));
     }
 
     private void setEditTextValue(int value) {
-        brightnessEditText.setText(Integer.toString(value));
+        brightnessEditText.setText(Short.toString((short) value));
     }
 
     @Override
@@ -167,16 +198,16 @@ public class MainActivity extends AppCompatActivity {
         aboutDialog.show();
     }
 
-    private int getMaxBrightnessValue() {
+    private short getMaxBrightnessValue() {
         String maxBrightnessFilename = "/sys/class/leds/wled/max_brightness";
-        int brightnessValue;
+        short brightnessValue;
         try {
             FileReader reader = new FileReader(maxBrightnessFilename);
             char [] valueChars = new char [5];
             try {
                 int tmp = reader.read(valueChars);
                 String valueString = new String(valueChars).trim();
-                brightnessValue = Integer.parseInt(valueString);
+                brightnessValue = Short.parseShort(valueString);
                 reader.close();
             }catch(IOException f) {
                 brightnessValue = -1;
@@ -190,6 +221,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void setButtonsOnClickAction() {
         Button changeButton = (Button) findViewById(R.id.change_btn);
+        final Context applicationContext = getApplicationContext();
+
         changeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -219,23 +252,31 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private int getDefaultBrightnessValue() {
-        return maxBrightnessValue/2;
+    private short getDefaultBrightnessValue() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        short brightnessValue = Short.parseShort(preferences.getString(getString(R.string.default_brightness_value_edit_text_preference_key), "8"));
+        System.out.println(brightnessValue);
+        return brightnessValue;
+    }
+
+    private boolean getCloseAppAutomaticallySetting() {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        return preferences.getBoolean(getString(R.string.automatically_close_app_preference_key), false);
     }
 
     private void setBrightnessSeekBarValue(int value) {
         brightnessSeekBar.setProgress(value);
     }
 
-    private int getBrightnessValueFromEditText() {
+    private short getBrightnessValueFromEditText() {
         String brightnessValueStr = brightnessEditText.getText().toString();
-        int brightnessValue;
+        short brightnessValue;
         //if user entered nothing
         if(brightnessValueStr.matches("")) {
             brightnessValue = -1;
         }
         else {
-            brightnessValue = Integer.parseInt(brightnessValueStr);
+            brightnessValue = Short.parseShort(brightnessValueStr);
         }
         return brightnessValue;
     }
@@ -247,6 +288,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void closeApplication() {
         stopService(new Intent(this, ScreenBrightnessService.class));
+        System.out.println("CLOSING APPLICATION");
         finishAffinity();
     }
 

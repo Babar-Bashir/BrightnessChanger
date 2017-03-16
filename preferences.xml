@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+        android:key="@string/settings_key"
+        android:title="@string/menu_settings"
+        android:persistent="false">
+
+    <CheckBoxPreference
+        android:key="@string/automatically_close_app_preference_key"
+        android:summary="@string/automatically_close_app_preference_summary"
+        android:title="@string/automatically_close_app_preference_title"
+        android:defaultValue="true"/>
+
+    <EditTextPreference
+        android:key="@string/timer_preference_key"
+        android:summary="@string/timer_preference_summary"
+        android:title="@string/timer_preference_title"
+        android:defaultValue="15"/>
+
+    <CheckBoxPreference
+        android:key="@string/power_save_mode_preference_key"
+        android:summary="@string/power_save_mode_preference_summary"
+        android:title="@string/power_save_mode_preference_title"
+        android:defaultValue="false"/>
+    <EditTextPreference
+        android:key="@string/default_brightness_value_preference_key"
+        android:title="@string/default_brightness_value_preference_title"
+        android:defaultValue="127"/>
+
+
+</PreferenceScreen>

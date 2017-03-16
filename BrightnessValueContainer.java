@@ -1,5 +1,5 @@
 package brightnesschanger.kuriata.damian.brightnesschanger;
 
 public class BrightnessValueContainer {
-    public static int brightnessValue;
+    public static short brightnessValue;
 }
