@@ -4,6 +4,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import brightnesschanger.kuriata.damian.brightnesschanger.MainActivity;
+
 public class ApplicationBroadcastReceiver extends BroadcastReceiver {
 
     @Override
@@ -24,8 +26,10 @@ public class ApplicationBroadcastReceiver extends BroadcastReceiver {
         }
         else if(intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
             BrightnessWriter.writeBrightness(BrightnessValueContainer.brightnessValue, context.getApplicationContext());
+            MainActivity.changeTimerShouldBeStoppedValue(true);
         }
         else if(intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+            MainActivity.changeTimerShouldBeStoppedValue(false);
             Intent exitIntent = new Intent(context, MainActivity.class);
             exitIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             exitIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);

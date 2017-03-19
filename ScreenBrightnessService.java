@@ -7,7 +7,6 @@ import android.app.Service;
 import android.content.Intent;
 import android.content.IntentFilter;
 
-import brightnesschanger.kuriata.damian.brightnesschanger.ScreenStateReceiver;
 import brightnesschanger.kuriata.damian.brightnesschanger.Actions;
 
 public class ScreenBrightnessService extends IntentService {

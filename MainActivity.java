@@ -22,7 +22,6 @@ import java.io.FileReader;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import brightnesschanger.kuriata.damian.brightnesschanger.ScreenStateReceiver;
 import brightnesschanger.kuriata.damian.brightnesschanger.BrightnessWriter;
 import brightnesschanger.kuriata.damian.brightnesschanger.ScreenBrightnessService;
 import brightnesschanger.kuriata.damian.brightnesschanger.BrightnessValueContainer;
@@ -37,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static boolean settingsMenuClickedPreviously;
     private SettingsFragment settingsFragment;
     private short timerTimeLimit;
-    private boolean timerShouldBeStopped = false;
+    private static boolean timerShouldBeStopped = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,27 +113,34 @@ public class MainActivity extends AppCompatActivity {
             closeApplication();
         }
         else if(intent.getAction().equals(Actions.ACTION_CLOSE_APPLICATION_WITH_CHECKING_SETTINGS)) {
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-            if(preferences.getBoolean(getString(R.string.automatically_close_app_preference_key), false)) {
+            if(getCloseAppAutomaticallySetting()) {
                 System.out.println("CLOSINT APP");
                 closeApplication();
             }
             else {
                 timerTimeLimit = getTimeToTerminateApplication();
-                Timer timer = new Timer();
-                TimerTask task = new TimerTask() {
-                    @Override
-                    public void run() {
-                        if(timerTimeLimit != 0) {
-                            timerTimeLimit--;
+                if(timerTimeLimit > -1) {
+                    Timer timer = new Timer();
+                    TimerTask task = new TimerTask() {
+                        @Override
+                        public void run() {
+                            System.out.println("TIMER");
+                            if(timerShouldBeStopped) {
+                                System.out.println("TIMER CANCEL");
+                                cancel();
+                            }
+                            else {
+                                if (timerTimeLimit != 0) {
+                                    timerTimeLimit--;
+                                } else {
+                                    cancel();
+                                    closeApplication();
+                                }
+                            }
                         }
-                        else {
-                            cancel();
-                            closeApplication();
-                        }
-                    }
-                };
-                timer.schedule(task, 0, 1000 * 60/*express time in one second*/);
+                    };
+                    timer.schedule(task, 0, 60 * 1000/*express time in minutes*/);
+                }
             }
         }
 
@@ -142,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
     private short getTimeToTerminateApplication() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        return Short.parseShort(prefs.getString(getString(R.string.timer_preference_key), "2"));
+        return Short.parseShort(prefs.getString(getString(R.string.timer_preference_key), "-1"));
     }
 
     private void setEditTextValue(int value) {
@@ -253,14 +259,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private short getDefaultBrightnessValue() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        short brightnessValue = Short.parseShort(preferences.getString(getString(R.string.default_brightness_value_edit_text_preference_key), "8"));
-        System.out.println(brightnessValue);
-        return brightnessValue;
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        short res = Short.parseShort(preferences.getString(getString(R.string.default_brightness_value_preference_key), "127"));
+        System.out.println(res);
+        return res;
     }
 
     private boolean getCloseAppAutomaticallySetting() {
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         return preferences.getBoolean(getString(R.string.automatically_close_app_preference_key), false);
     }
 
@@ -290,6 +296,10 @@ public class MainActivity extends AppCompatActivity {
         stopService(new Intent(this, ScreenBrightnessService.class));
         System.out.println("CLOSING APPLICATION");
         finishAffinity();
+    }
+
+    public static void changeTimerShouldBeStoppedValue(boolean state) {
+        timerShouldBeStopped = state;
     }
 
 }

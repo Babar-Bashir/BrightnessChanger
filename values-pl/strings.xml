@@ -20,4 +20,6 @@
     <string name="notification_content_title">Aplikacja uruchomiona</string>
     <string name="service_description">Serwis ustawia jasność ekranu na tą wpisaną przez użytkownika po tym jak ekran został wyłączony</string>
     <string name="thanks">Dziękuję Ci za używanie mojej aplikacji!</string>
+    <string name="automatically_close_app_preference_summary">Automatycznie zamykaj aplikację, gdy ekran zostanie wyłączony</string>
+    <string name="automatically_close_app_preference_title">Zamykaj aplikację automatycznie</string>
 </resources>
